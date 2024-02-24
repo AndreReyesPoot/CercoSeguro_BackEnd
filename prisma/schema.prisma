@@ -9,61 +9,60 @@ datasource db {
 
 model Cerco_Seguro {
   ID_Cerco            Int                   @id @default(autoincrement())
-  P_Coordenada        Unsupported("point")
-  S_Coordenada        Unsupported("point")
-  T_Coordenada        Unsupported("point")
-  C_Coordenada        Unsupported("point")
+  P_Latitud           Decimal               @db.Decimal
+  P_Longitud          Decimal               @db.Decimal
+  S_Latitud           Decimal               @db.Decimal
+  S_Longitud          Decimal               @db.Decimal
+  T_Latitud           Decimal               @db.Decimal
+  T_Longitud          Decimal               @db.Decimal
+  C_Latitud           Decimal               @db.Decimal
+  C_Longitud          Decimal               @db.Decimal
   Usuario_Supervisado Usuario_Supervisado[]
 }
 
 model Cuenta {
-  ID_US   Int      @id @default(autoincrement())
-  Tipo    String   @db.VarChar
-  Name    String   @db.VarChar
-  Address String   @db.VarChar
-  Email   String   @unique @db.VarChar
-  tel     String   @unique @db.VarChar
-  Usuario Usuario?
+  ID_US            Int                @id @default(autoincrement())
+  Tipo             String             @db.VarChar
+  Name             String             @db.VarChar
+  Address          String             @db.VarChar
+  Email            String             @unique @db.VarChar
+  User             String             @unique @db.VarChar
+  tel              String             @unique @db.VarChar
+  pass             String             @db.VarChar
+  ID_Tipo          Int
+  Tipo_Usuario     Tipo_Usuario       @relation(fields: [ID_Tipo], references: [ID_Tipo], onDelete: NoAction, onUpdate: NoAction)
+  US_USS_Weareable US_USS_Weareable[]
 }
 
 model Tipo_Usuario {
-  ID_Tipo Int       @id @default(autoincrement())
-  Tipo    String    @db.VarChar
-  Usuario Usuario[]
+  ID_Tipo Int      @id @default(autoincrement())
+  Tipo    String   @db.VarChar
+  Cuenta  Cuenta[]
 }
 
 model US_USS_Weareable {
   ID_US_USS_Weareable Int                 @id @default(autoincrement())
-  W_COD               Int
   ID_US               Int
+  ID_Wearable         String              @db.VarChar
   ID_USS              Int
   Usuario_Supervisado Usuario_Supervisado @relation(fields: [ID_USS], references: [ID_USS], onDelete: NoAction, onUpdate: NoAction)
-  Usuario             Usuario             @relation(fields: [ID_US], references: [ID_US], onDelete: NoAction, onUpdate: NoAction)
-  Wearable            Wearable            @relation(fields: [W_COD], references: [W_COD], onDelete: NoAction, onUpdate: NoAction)
+  Usuario             Cuenta              @relation(fields: [ID_US], references: [ID_US], onDelete: NoAction, onUpdate: NoAction)
+  Wearable            Wearable            @relation(fields: [ID_Wearable], references: [ID_Wearable], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model Ubicacion {
-  ID_Ubicacion Int                  @id @default(autoincrement())
-  Ubicacion    Unsupported("point")
-  inout        String               @db.Bit(1)
-  ID_Wearable  Int
-  Wearable     Wearable             @relation(fields: [ID_Wearable], references: [ID_Wearable], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model Usuario {
-  ID_US            Int                @id @default(autoincrement())
-  CS_S             String             @db.VarChar
-  ID_Tipo          Int
-  US_USS_Weareable US_USS_Weareable[]
-  Tipo_Usuario     Tipo_Usuario       @relation(fields: [ID_Tipo], references: [ID_Tipo], onDelete: NoAction, onUpdate: NoAction)
-  Cuenta           Cuenta             @relation(fields: [ID_US], references: [ID_US], onDelete: NoAction, onUpdate: NoAction)
+  ID_Ubicacion Int      @id @default(autoincrement())
+  Latitud      Decimal  @db.Decimal
+  Longitud     Decimal  @db.Decimal
+  ID_Wearable  String   @db.VarChar
+  Wearable     Wearable @relation(fields: [ID_Wearable], references: [ID_Wearable], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model Usuario_Supervisado {
   ID_USS           Int                @id @default(autoincrement())
-  W_name           String             @db.VarChar
+  USS_name         String             @db.VarChar
   Address          String             @db.VarChar
-  Tel_W            String             @db.VarChar
+  Tel_USS          String             @db.VarChar
   NSS              String             @db.VarChar
   ID_Cerco         Int
   US_USS_Weareable US_USS_Weareable[]
@@ -71,11 +70,8 @@ model Usuario_Supervisado {
 }
 
 model Wearable {
-  ID_Wearable      Int                @unique @default(autoincrement())
-  W_COD            Int                @unique
+  ID_Wearable      String             @id @db.VarChar
   Registro_ID      Int
   US_USS_Weareable US_USS_Weareable[]
   Ubicacion        Ubicacion[]
-
-  @@id([ID_Wearable, W_COD])
 }

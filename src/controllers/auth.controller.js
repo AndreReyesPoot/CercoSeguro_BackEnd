@@ -1,23 +1,89 @@
 import bcrypt from "bcryptjs";
+import { prisma } from "../db/db.js";
+import { isValidEmail } from "../utils/validations.js";
 
-export const loginUser = (req, res) => {
-	const { correo, password } = req.body;
-	console.log({ correo, password });
+export const loginUser = async (req, res) => {
+	const { user, password } = req.body;
+	console.log({ user, password });
 
-	if (correo.length === 0 || password.length === 0) {
+	if (user.length === 0 || password.length === 0) {
 		return res.status(400).json({ message: "Datos vacios." });
 	}
 
-	if (
-		!bcrypt.compareSync(
-			password,
-			"$2a$10$mQ7xLoyhkI5wSUIuDBfXhO0RmBIEy7ZlvY8UZ1xvTgYgL0g3YfyJ2",
-		)
-	) {
-		return res.status(400).json({ message: "Password invalido" });
+	if (isValidEmail(user)) {
+		try {
+			await prisma.$connect();
+
+			const userdb = await prisma.cuenta.findUnique({
+				where: {
+					Email: user,
+				},
+				select: {
+					Name: true,
+					ID_Tipo: true,
+					tel: true,
+					User: true,
+					pass: true,
+				},
+			});
+
+			await prisma.$disconnect();
+
+			if (!userdb) {
+				return res
+					.status(404)
+					.json({ message: "usuario o contraseña no validos." });
+			}
+
+			console.log({ userdb });
+
+			const { ID_Tipo, Name, User, tel, pass } = userdb;
+
+			if (!bcrypt.compareSync(password, pass)) {
+				return res
+					.status(400)
+					.json({ message: "usuario o contraseña no validos." });
+			}
+
+			return res.status(200).json({ ID_Tipo, Name, User, tel, user });
+		} catch (error) {
+			return res.status(400).json({ error });
+		}
 	}
 
-	return res.status(200).json({ message: "El usuario es correcto" });
+	try {
+		await prisma.$connect();
+
+		const userdb = await prisma.cuenta.findUnique({
+			where: {
+				User: user,
+			},
+			select: {
+				Name: true,
+				ID_Tipo: true,
+				tel: true,
+				Email: true,
+				pass: true,
+			},
+		});
+
+		if (!userdb) {
+			return res
+				.status(404)
+				.json({ message: "usuario o contraseña no validos." });
+		}
+
+		await prisma.$disconnect();
+
+		const { Name, ID_Tipo, tel, Email, pass } = userdb;
+		if (!bcrypt.compareSync(password, pass)) {
+			return res
+				.status(400)
+				.json({ message: "usuario o contraseña no validos." });
+		}
+	} catch (error) {
+		return res.status(400).json({ error });
+	}
 };
 
 export const registerUser = (req, res) => {
