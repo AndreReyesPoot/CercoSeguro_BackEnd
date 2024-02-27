@@ -1,22 +1,22 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../db/db.js";
-import { isValidEmail } from "../utils/validations.js";
+import { isValidEmail, signToken } from "../utils/index.js";
 
 export const loginUser = async (req, res) => {
-	const { user, password } = req.body;
-	console.log({ user, password });
+	const { user_in, password } = req.body;
+	console.log({ user_in, password });
 
-	if (user.length === 0 || password.length === 0) {
+	if (user_in.length === 0 || password.length === 0) {
 		return res.status(400).json({ message: "Datos vacios." });
 	}
 
-	if (isValidEmail(user)) {
+	if (isValidEmail(user_in)) {
 		try {
 			await prisma.$connect();
 
 			const userdb = await prisma.cuenta.findUnique({
 				where: {
-					Email: user,
+					Email: user_in,
 				},
 				select: {
 					Name: true,
@@ -35,8 +35,6 @@ export const loginUser = async (req, res) => {
 					.json({ message: "usuario o contraseña no validos." });
 			}
 
-			console.log({ userdb });
-
 			const { ID_Tipo, Name, User, tel, pass } = userdb;
 
 			if (!bcrypt.compareSync(password, pass)) {
@@ -44,8 +42,12 @@ export const loginUser = async (req, res) => {
 					.status(400)
 					.json({ message: "usuario o contraseña no validos." });
 			}
+			console.log("HOla");
+			const token = signToken(User, tel, Name, ID_Tipo, user_in);
 
-			return res.status(200).json({ ID_Tipo, Name, User, tel, user });
+			return res
+				.status(200)
+				.json({ usuario: { ID_Tipo, Name, User, tel, user_in }, token });
 		} catch (error) {
 			return res.status(400).json({ error });
 		}
@@ -56,7 +58,7 @@ export const loginUser = async (req, res) => {
 
 		const userdb = await prisma.cuenta.findUnique({
 			where: {
-				User: user,
+				User: user_in,
 			},
 			select: {
 				Name: true,
@@ -81,6 +83,12 @@ export const loginUser = async (req, res) => {
 				.status(400)
 				.json({ message: "usuario o contraseña no validos." });
 		}
+
+		const token = signToken(User, tel, Name, ID_Tipo, user_in);
+
+		return res
+			.status(200)
+			.json({ usuario: { ID_Tipo, Name, User, tel, user_in } }, token);
 	} catch (error) {
 		return res.status(400).json({ error });
 	}
