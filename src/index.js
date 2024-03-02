@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import morgan from "morgan";
-import { apiRoutes, authRoutes } from "./routes/index.js";
+import { apiRoutes, authRoutes, dataRoutes } from "./routes/index.js";
 
 const app = express();
 
@@ -16,6 +16,7 @@ app.use(morgan("dev"));
 // * se cargan las rutas
 app.use(apiRoutes);
 app.use(authRoutes);
+app.use(dataRoutes);
 
 // * Inicio de la aplicación
 
