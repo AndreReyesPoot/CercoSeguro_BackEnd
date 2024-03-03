@@ -45,3 +45,55 @@ export const getDataUser = async (req, res) => {
 		return res.status(400).json({ error });
 	}
 };
+
+export const updateSafeFence = async (req, res) => {
+	const {
+		P_Latitud,
+		P_Longitud,
+		S_Latitud,
+		S_Longitud,
+		T_Latitud,
+		T_Longitud,
+		C_Latitud,
+		C_Longitud,
+		ID_USS,
+	} = req.body;
+
+	try {
+		await prisma.$connect();
+
+		const updateFence = await prisma.usuario_Supervisado.update({
+			data: {
+				Cerco_Seguro: {
+					update: {
+						P_Latitud,
+						P_Longitud,
+						S_Latitud,
+						S_Longitud,
+						T_Latitud,
+						T_Longitud,
+						C_Latitud,
+						C_Longitud,
+					},
+				},
+			},
+			where: {
+				ID_USS,
+			},
+		});
+
+		await prisma.$disconnect();
+
+		if (!updateFence) {
+			return res
+				.status(404)
+				.json({ message: "Se tiene un error en la coneccion" });
+		}
+
+		return res
+			.status(200)
+			.json({ message: "Se actualizo con exito el cerco seguro" });
+	} catch (error) {
+		return res.status(400).json({ message: `Se ha tenido un error: ${error}` });
+	}
+};
