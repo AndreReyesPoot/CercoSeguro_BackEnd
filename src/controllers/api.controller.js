@@ -28,8 +28,7 @@ export const supervisorPUT = (req, res) => {
 };
 
 export const updatePoints = async (req, res) => {
-	const { userId } = req.params;
-	const { markers } = req.body;
+	const { markers, id_cerco } = req.body;
 	const { marker1, marker2, marker3, marker4 } = markers;
 	if (
 		typeof marker1.latitud !== "number" ||
@@ -58,24 +57,29 @@ export const updatePoints = async (req, res) => {
 	try {
 		await prisma.$connect();
 
-		const id_cerco = await prisma.usuario_Supervisado.findUnique({
-			select: {
-				ID_Cerco,
-			},
+		const data = await prisma.cerco_Seguro.update({
 			where: {
-				ID_USS: userId,
+				ID_Cerco: id_cerco,
+			},
+			data: {
+				P_Latitud: marker1.latitud,
+				P_Longitud: marker1.longitud,
+				S_Latitud: marker2.latitud,
+				S_Longitud: marker2.longitud,
+				T_Latitud: marker3.latitud,
+				T_Longitud: marker3.longitud,
+				C_Latitud: marker4.latitud,
+				C_Longitud: marker4.longitud,
 			},
 		});
 
-		await prisma.cerco_Seguro.update({
-			where: {
-				ID_Cerco: id_cerco.ID_Cerco,
-			},
-			data: {},
+		await prisma.$disconnect();
+
+		return res.status(200).json({
+			message: "El cerco seguro se actuializo de forma correcta.",
+			data,
 		});
-
-		await prisma.$extends();
-	} catch (error) {}
-
-	return res.status(200).json({ userId, markers });
+	} catch (error) {
+		return res.status(400).jhs({ message: error.message });
+	}
 };

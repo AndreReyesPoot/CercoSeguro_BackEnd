@@ -42,7 +42,7 @@ export const getDataUser = async (req, res) => {
 
 		return res.status(200).json({ Usuario_Supervisado });
 	} catch (error) {
-		return res.status(400).json({ error });
+		return res.status(400).json({ message: error.message });
 	}
 };
 
@@ -94,6 +94,6 @@ export const updateSafeFence = async (req, res) => {
 			.status(200)
 			.json({ message: "Se actualizo con exito el cerco seguro" });
 	} catch (error) {
-		return res.status(400).json({ message: `Se ha tenido un error: ${error}` });
+		return res.status(400).json({ message: error.message });
 	}
 };
