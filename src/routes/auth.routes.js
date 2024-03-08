@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+	finishRegister,
 	loginUser,
 	registerUser,
 	safe_fence,
@@ -15,5 +16,7 @@ router.post("/auth/register", registerUser);
 router.post("/auth/safe_fence", safe_fence);
 
 router.post("/auth/supervised_user", supervised_user);
+
+router.post("/auth/finish_register", finishRegister);
 
 export default router;

@@ -236,3 +236,31 @@ export const safe_fence = async (req, res) => {
 		return res.status(400).json({ message: error.message });
 	}
 };
+
+export const finishRegister = async (req, res) => {
+	const { id_werable, id_us, id_uss } = req.body;
+
+	if (
+		id_werable.length <= 5 ||
+		typeof id_us === "number" ||
+		typeof id_uss === "number"
+	) {
+		return res.status(404).json({ message: "Se tiene un error en los datos" });
+	}
+
+	try {
+		await prisma.$connect();
+
+		await prisma.uS_USS_Weareable.create({
+			data: {
+				ID_Wearable: id_werable,
+				ID_US: id_us,
+				ID_USS: id_uss,
+			},
+		});
+
+		await prisma.$disconnect();
+	} catch (error) {
+		return res.status(400).json({ message: error.message });
+	}
+};
