@@ -22,7 +22,6 @@ model Cerco_Seguro {
 
 model Cuenta {
   ID_US            Int                @id @default(autoincrement())
-  Tipo             String             @db.VarChar
   Name             String             @db.VarChar
   Address          String             @db.VarChar
   Email            String             @unique @db.VarChar

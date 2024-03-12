@@ -95,8 +95,7 @@ export const loginUser = async (req, res) => {
 };
 
 export const registerUser = async (req, res) => {
-	const { name, type, address, email, username, password, isAdmin, phone } =
-		req.body;
+	const { name, address, email, username, password, isAdmin, phone } = req.body;
 
 	let roll = 2;
 
@@ -106,7 +105,6 @@ export const registerUser = async (req, res) => {
 
 	if (
 		name.length <= 5 ||
-		type.length <= 0 ||
 		address.length <= 5 ||
 		username.length <= 5 ||
 		password.length <= 6 ||
@@ -132,7 +130,6 @@ export const registerUser = async (req, res) => {
 
 		await prisma.cuenta.create({
 			data: {
-				Tipo: type,
 				Name: name,
 				Address: address,
 				Email: email,
