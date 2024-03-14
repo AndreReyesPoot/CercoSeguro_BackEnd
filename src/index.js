@@ -19,11 +19,6 @@ app.use(authRoutes);
 app.use(dataRoutes);
 
 // * Inicio de la aplicación
-
-app.get("/", (_req, res) => {
-	res.send("Welcome");
-});
-
 app.use((_req, res) => {
 	res
 		.status(404)

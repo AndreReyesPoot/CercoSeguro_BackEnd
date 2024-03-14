@@ -1,35 +1,81 @@
 import { prisma } from "../db/db.js";
+import { isEmail } from "../utils/validations.js";
 
-export const supervisorPUT = (req, res) => {
+export const supervisorPUT = async (req, res) => {
+	// * se destructura los parametros que se mandan desde el front
 	const { userId } = req.params;
-	const { name, address, phone, email, user, password, isAdmin } = req.body;
+	const { name, address, phone, email, user, isAdmin } = req.body;
 
+	let roll = 2;
+
+	// * se validan los datos que cumplan con los tipos de datos
 	if (typeof isAdmin !== "boolean") {
 		return res
 			.status(400)
 			.json({ message: "Se tiene un problema con el tipo de datos" });
 	}
+
+	// * se validan los datos que cumplan con los tipos de datos
 	if (
-		name.length === 0 ||
-		address.length === 0 ||
-		phone.length === 0 ||
-		email.length === 0 ||
-		user.length === 0 ||
-		password.length === 0
+		name.length <= 5 ||
+		address.length <= 5 ||
+		phone.length <= 5 ||
+		!isEmail(email) ||
+		user.length <= 5
 	) {
 		return res.status(400).json({
 			message: "Se tiene un error en los datos, un campo o mas esta vacio",
 		});
 	}
 
-	return res
-		.status(200)
-		.json({ userId, name, address, phone, email, user, password, isAdmin });
+	// * asigna el rtipo de roll
+	if (isAdmin === true) {
+		roll = 1;
+	}
+
+	try {
+		// * se abre la  coneccion con la db para realizar una consulta SQL por medio de prisma ORM.
+		await prisma.$connect();
+
+		// * se hace la peticion SQL a la db (acrtualiza la tupla)
+		const data = await prisma.cuenta.update({
+			data: {
+				Address: address,
+				Email: email,
+				Name: name,
+				telephone: phone,
+				ID_Tipo: roll,
+				User: user,
+			},
+			where: {
+				ID_US: userId,
+			},
+		});
+
+		// * se cierra la coneecion de a la DB
+		await prisma.$disconnect();
+
+		// * Validacion de que no se nos arroje un null en la creacion de los datos
+		if (!data) {
+			return res.status(400).json({ message: "Error al crear los datos" });
+		}
+
+		// * se retorna la respuesta para su uso en el front-end
+		return res
+			.status(200)
+			.json({ userId, name, address, phone, email, user, isAdmin });
+	} catch (error) {
+		// *si se tiene un error en las peticiones a la DB recae en el error
+		return res.status(400).jhs({ message: error.message });
+	}
 };
 
 export const updatePoints = async (req, res) => {
+	// * se destructura los parametros que se mandan desde el front
 	const { markers, id_cerco } = req.body;
 	const { marker1, marker2, marker3, marker4 } = markers;
+
+	// * se validan los datos que cumplan con los tipos de datos
 	if (
 		typeof marker1.latitud !== "number" ||
 		typeof marker2.latitud !== "number" ||
@@ -42,6 +88,7 @@ export const updatePoints = async (req, res) => {
 		});
 	}
 
+	// * se validan los datos que cumplan con los tipos de datos
 	if (
 		typeof marker1.longitud !== "number" ||
 		typeof marker2.longitud !== "number" ||
@@ -55,8 +102,10 @@ export const updatePoints = async (req, res) => {
 	}
 
 	try {
+		// * se abre la  coneccion con la db para realizar una consulta SQL por medio de prisma ORM.
 		await prisma.$connect();
 
+		// * se hace la peticion SQL a la db (actualizar la tupla)
 		const data = await prisma.cerco_Seguro.update({
 			where: {
 				ID_Cerco: id_cerco,
@@ -73,13 +122,21 @@ export const updatePoints = async (req, res) => {
 			},
 		});
 
+		// * se cierra la coneecion de a la DB
 		await prisma.$disconnect();
 
+		// * Validacion de que no se nos arroje un null en la creacion de los datos
+		if (!data) {
+			return res.status(400).json({ message: "Error al actualizar los datos" });
+		}
+
+		// * se retorna la respuesta para su uso en el front-end
 		return res.status(200).json({
 			message: "El cerco seguro se actuializo de forma correcta.",
 			data,
 		});
 	} catch (error) {
+		// *si se tiene un error en las peticiones a la DB recae en el error
 		return res.status(400).jhs({ message: error.message });
 	}
 };
