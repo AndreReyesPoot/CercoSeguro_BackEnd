@@ -9,6 +9,7 @@ import {
 
 const router = Router();
 
+// * se crean las rutas para su funcionamiento
 router.post("/auth/login", loginUser);
 
 router.post("/auth/register", registerUser);
