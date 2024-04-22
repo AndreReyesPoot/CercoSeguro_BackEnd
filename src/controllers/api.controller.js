@@ -1,6 +1,7 @@
 import { prisma } from "../db/db.js";
 import { isEmail } from "../utils/validations.js";
 
+// ? Actaualizar datos de la persona supervisora
 export const supervisorPUT = async (req, res) => {
 	// * se destructura los parametros que se mandan desde el front
 	const { userId } = req.params;
@@ -70,6 +71,7 @@ export const supervisorPUT = async (req, res) => {
 	}
 };
 
+// ? Se actualiza los datos de creco seguro.
 export const updatePoints = async (req, res) => {
 	// * se destructura los parametros que se mandan desde el front
 	const { markers, id_cerco } = req.body;

@@ -1,5 +1,6 @@
 import { prisma } from "../db/index.js";
 
+// ? Se obtienen los datos de un usuario con el id del supervisor
 export const getDataUser = async (req, res) => {
 	// * se destructura los parametros que se mandan desde el front
 	const { userId } = req.params;
@@ -54,7 +55,7 @@ export const getDataUser = async (req, res) => {
 		return res.status(400).json({ message: error.message });
 	}
 };
-
+// ? otra forma de actualizar el cerco seguro
 export const updateSafeFence = async (req, res) => {
 	// * se destructura los parametros que se mandan desde el front
 	const {
@@ -128,6 +129,7 @@ export const updateSafeFence = async (req, res) => {
 	}
 };
 
+// ? se actualiza la localizacion del usuario con base en en werable
 export const updateLocated = async (req, res) => {
 	// * se destructura los parametros que se mandan desde el front
 	const { idWerable, latitud, longitud } = req.body;

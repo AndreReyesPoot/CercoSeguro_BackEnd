@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../db/db.js";
 import { isValidEmail, signToken } from "../utils/index.js";
 
+// ? Es el logueo del usuario
 export const loginUser = async (req, res) => {
 	// * se destructura los parametros que se mandan desde el front
 	const { user_in, password } = req.body;
@@ -116,6 +117,7 @@ export const loginUser = async (req, res) => {
 	}
 };
 
+// ? Son los parametros para el registro de un usuario.
 export const registerUser = async (req, res) => {
 	// * se destructura los parametros que se mandan desde el front
 	const { name, address, email, username, password, isAdmin, phone } = req.body;
@@ -187,6 +189,7 @@ export const registerUser = async (req, res) => {
 	}
 };
 
+// ? son los datos para la creacion
 export const supervised_user = async (req, res) => {
 	// * se destructura los parametros que se mandan desde el front
 	const { uss_name, address, tel_uss, nss, id_cerco } = req.body;
@@ -236,6 +239,7 @@ export const supervised_user = async (req, res) => {
 	}
 };
 
+// ? creacion del cerco seguro en un inicio
 export const safe_fence = async (req, res) => {
 	// * se destructura los parametros que se mandan desde el front
 	const {
@@ -300,6 +304,7 @@ export const safe_fence = async (req, res) => {
 	}
 };
 
+// ? finalizar el registro de un nuevo usuario
 export const finishRegister = async (req, res) => {
 	// * se destructura los parametros que se mandan desde el front
 	const { id_werable, id_us, id_uss, latitud, longitud } = req.body;
