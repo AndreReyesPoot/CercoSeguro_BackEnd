@@ -30,6 +30,7 @@ export const loginUser = async (req, res) => {
 					tel: true,
 					User: true,
 					pass: true,
+					ID_US: true,
 				},
 			});
 
