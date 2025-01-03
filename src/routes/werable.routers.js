@@ -4,7 +4,7 @@ import { newDivices, paierWerable } from "../controllers/index.js";
 const router = Router();
 
 // * se crean las rutas para su funcionamiento
-router.put("/werable/newPair", newDivices);
+router.post("/werable/newPair", newDivices);
 
 router.put("/werable/pairDevices", paierWerable);
 
