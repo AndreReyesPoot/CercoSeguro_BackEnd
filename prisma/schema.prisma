@@ -74,3 +74,10 @@ model Wearable {
   US_USS_Weareable US_USS_Weareable[]
   Ubicacion        Ubicacion[]
 }
+
+model wearablePair {
+  id                  Int     @id @default(autoincrement())
+  id_wearable         String  @db.VarChar
+  numero_comprobacion String  @db.VarChar
+  numero_usuario      String? @db.VarChar
+}

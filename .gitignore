@@ -177,3 +177,4 @@ dist
 .env
 
 bun.lockb
+.codegpt

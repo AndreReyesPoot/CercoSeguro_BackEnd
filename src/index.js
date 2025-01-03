@@ -1,7 +1,12 @@
 import "dotenv/config";
 import express from "express";
 import morgan from "morgan";
-import { apiRoutes, authRoutes, dataRoutes } from "./routes/index.js";
+import {
+	apiRoutes,
+	authRoutes,
+	dataRoutes,
+	werableRoutes,
+} from "./routes/index.js";
 
 const app = express();
 
@@ -17,6 +22,7 @@ app.use(morgan("dev"));
 app.use(apiRoutes);
 app.use(authRoutes);
 app.use(dataRoutes);
+app.use(werableRoutes);
 
 // * Inicio de la aplicación
 app.use((_req, res) => {
