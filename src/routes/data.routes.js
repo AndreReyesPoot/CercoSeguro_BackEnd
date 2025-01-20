@@ -12,6 +12,7 @@ router.get("/data/user/:userId", getDataUser);
 
 router.put("/data/safefence", updateSafeFence);
 
+router.post("/data/updatelocated", updateLocated);
 router.put("/data/updatelocated", updateLocated);
 
 export default router;

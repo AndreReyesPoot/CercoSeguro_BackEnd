@@ -53,7 +53,7 @@ model Ubicacion {
   ID_Ubicacion Int      @id @default(autoincrement())
   Latitud      Decimal  @db.Decimal
   Longitud     Decimal  @db.Decimal
-  ID_Wearable  String   @db.VarChar
+  ID_Wearable  String   @db.VarChar @unique  // Marca ID_Wearable como único
   Wearable     Wearable @relation(fields: [ID_Wearable], references: [ID_Wearable], onDelete: NoAction, onUpdate: NoAction)
 }
 

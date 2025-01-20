@@ -1,64 +1,58 @@
 import { prisma } from "../db/index.js";
 
-export const newDivices = async (req, res) => {
-	const { id_Wearable, numero_comprobacion } = req.body;
-
-	if (id_Wearable.length === 0 || numero_comprobacion.length === 0) {
-		return res
-			.status(400)
-			.json({ message: "Los datos requeridos se encuentran vacios" });
+export const newDevices = async (req, res) => {
+	const { id_wearable, numero_comprobacion } = req.body;
+  
+	if (!id_wearable || !numero_comprobacion) {
+	  return res.status(400).json({ message: "Los datos requeridos están vacíos" });
 	}
-
+  
 	try {
-		await prisma.$connect();
-		const dataWerable = await prisma.wearablePair.create({
-			data: {
-				id_wearable,
-				numero_comprobacion,
-			},
-		});
-		await prisma.$disconnect();
-
-		if (!dataWerable) {
-			return res
-				.status(400)
-				.json({ message: "No se pudo registrar el werable" });
-		}
-
-		return res.status(200).json(dataWerable);
+	  const dataWearable = await prisma.wearablePair.create({
+		data: {
+		  id_wearable,
+		  numero_comprobacion,
+		},
+	  });
+  
+	  return res.status(200).json(dataWearable);
 	} catch (error) {
-		return res.status(400).json({ message: error.message });
+	  return res.status(500).json({ message: error.message });
 	}
-};
+  };
 
-export const paierWerable = async (req, res) => {
-	const { id_werable, numero_usuario } = req.body;
-
-	if (id_werable.length === 0 || numero_usuario.length === 0) {
-		return res
-			.status(400)
-			.json({ message: "Los datos requeridos se encuentran vacios" });
+  export const pairWearable = async (req, res) => {
+	const { id_wearable, numero_comprobacion } = req.body;
+  
+	if (!id_wearable || !numero_comprobacion) {
+	  return res.status(400).json({ message: 'Los datos requeridos están vacíos' });
 	}
-
+  
 	try {
-		await prisma.$connect();
-		const dataWerableUpdate = await prisma.wearablePair.update({
-			where: {
-				id_wearable,
-			},
-			data: {
-				numero_usuario,
-			},
-		});
-		await prisma.$disconnect();
-
-		if (!dataWerableUpdate) {
-			return res
-				.status(400)
-				.json({ message: "No se pudo sincronizar el werable" });
-		}
-		return res.status(200).json(dataWerableUpdate);
+	  // Busca el wearable basado en `id_wearable` y `numero_comprobacion`
+	  const dataWearable = await prisma.wearablePair.findFirst({
+		where: {
+		  id_wearable,
+		  numero_comprobacion,
+		},
+	  });
+  
+	  if (!dataWearable) {
+		return res.status(400).json({ message: 'Código de comprobación incorrecto' });
+	  }
+  
+	  // Actualiza el estado del wearable
+	  const updatedWearable = await prisma.wearablePair.update({
+		where: {
+		  id: dataWearable.id, // Usamos el campo `id`, que es único
+		},
+		data: {
+		  numero_usuario: 'synced', // Marcar como sincronizado
+		},
+	  });
+  
+	  return res.status(200).json(updatedWearable);
 	} catch (error) {
-		return res.status(400).json({ message: error.message });
+	  return res.status(500).json({ message: error.message });
 	}
-};
+  };

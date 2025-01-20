@@ -129,50 +129,80 @@ export const updateSafeFence = async (req, res) => {
 	}
 };
 
-// ? se actualiza la localizacion del usuario con base en en werable
 export const updateLocated = async (req, res) => {
-	// * se destructura los parametros que se mandan desde el front
 	const { idWerable, latitud, longitud } = req.body;
-
-	// * se validan los datos que cumplan con los tipos de datos
+  
+	// Validación de datos
 	if (
-		typeof latitud !== "number" ||
-		typeof longitud !== "number" ||
-		typeof idWerable !== "string"
+	  typeof latitud !== "number" ||
+	  typeof longitud !== "number" ||
+	  typeof idWerable !== "string"
 	) {
-		return res
-			.status(400)
-			.json({ message: "Se ntiene un error con los datos" });
+	  return res
+		.status(400)
+		.json({ message: "Error con los datos proporcionados" });
 	}
+  
 	try {
-		// * se abre la  coneccion con la db para realizar una consulta SQL por medio de prisma ORM.
-		await prisma.$connect();
-
-		// * se hace la peticion SQL a la db (actualiza la tupla)
-		const data = await prisma.ubicacion.update({
-			data: {
-				Latitud: latitud,
-				Longitud: longitud,
-			},
-			where: {
-				ID_Wearable: idWerable,
-			},
+	  // Verificar si el wearable existe
+	  const wearableExists = await prisma.wearable.findUnique({
+		where: {
+		  ID_Wearable: idWerable,  // Verificar si el wearable existe en la tabla Wearable
+		},
+	  });
+  
+	  // Si no existe, crear el wearable
+	  if (!wearableExists) {
+		await prisma.wearable.create({
+		  data: {
+			ID_Wearable: idWerable,  // ID_Wearable para el nuevo wearable
+			// Otros campos necesarios para el wearable
+		  },
 		});
-
-		// * se cierra la coneecion de a la DB
-		await prisma.$disconnect();
-
-		// * Validacion de que no se nos arroje un null en la creacion de los datos
-		if (!data) {
-			return res.status(400).json({ message: "Error al crear los datos" });
-		}
-
-		// * se retorna la respuesta para su uso en el front-end
-		return res
-			.status(200)
-			.json({ message: "Se actualizaron los datos con exito" });
+	  }
+  
+	  // Verificar si ya existe un registro de ubicación para el wearable
+	  const existingLocation = await prisma.ubicacion.findUnique({
+		where: {
+		  ID_Wearable: idWerable,  // Buscar el registro por ID_Wearable
+		},
+	  });
+  
+	  if (!existingLocation) {
+		// Si no existe, crear uno nuevo
+		const newLocation = await prisma.ubicacion.create({
+		  data: {
+			ID_Wearable: idWerable,
+			Latitud: latitud,
+			Longitud: longitud,
+		  },
+		});
+		return res.status(201).json({
+		  message: "Ubicación creada con éxito",
+		  data: newLocation,
+		});
+	  }
+  
+	  // Si existe, actualizar la ubicación
+	  const updatedLocation = await prisma.ubicacion.update({
+		where: {
+		  ID_Wearable: idWerable,
+		},
+		data: {
+		  Latitud: latitud,
+		  Longitud: longitud,
+		},
+	  });
+  
+	  return res.status(200).json({
+		message: "Datos actualizados con éxito",
+		data: updatedLocation,
+	  });
 	} catch (error) {
-		// *si se tiene un error en las peticiones a la DB recae en el error
-		return res.status(400).json({ message: error.message });
+	  return res.status(500).json({
+		message: "Error interno del servidor",
+		error: error.message,
+	  });
 	}
-};
+  };
+  
