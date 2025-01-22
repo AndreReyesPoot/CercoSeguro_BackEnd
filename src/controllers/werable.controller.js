@@ -2,11 +2,11 @@ import { prisma } from "../db/index.js";
 
 export const newDevices = async (req, res) => {
 	const { id_wearable, numero_comprobacion } = req.body;
-  
+
 	if (!id_wearable || !numero_comprobacion) {
-	  return res.status(400).json({ message: "Los datos requeridos están vacíos" });
+		return res.status(400).json({ message: "Los datos requeridos están vacíos" });
 	}
-  
+
 	try {
 	  const dataWearable = await prisma.wearablePair.create({
 		data: {
@@ -17,9 +17,9 @@ export const newDevices = async (req, res) => {
   
 	  return res.status(200).json(dataWearable);
 	} catch (error) {
-	  return res.status(500).json({ message: error.message });
+	  	return res.status(500).json({ message: error.message });
 	}
-  };
+};
 
   export const pairWearable = async (req, res) => {
 	const { id_wearable, numero_comprobacion } = req.body;

@@ -77,7 +77,7 @@ model Wearable {
 
 model wearablePair {
   id                  Int     @id @default(autoincrement())
-  id_wearable         String  @db.VarChar
+  id_wearable         String? @db.VarChar // Cambiado a opcional
   numero_comprobacion String  @db.VarChar
   numero_usuario      String? @db.VarChar
 }
