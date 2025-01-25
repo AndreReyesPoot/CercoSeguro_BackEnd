@@ -70,7 +70,7 @@ model Usuario_Supervisado {
 
 model Wearable {
   ID_Wearable      String             @id @db.VarChar
-  Registro_ID      Int
+  Registro_ID      Int?               // Ahora es opcional
   US_USS_Weareable US_USS_Weareable[]
   Ubicacion        Ubicacion[]
 }
